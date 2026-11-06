@@ -1,0 +1,9 @@
+# Optional convenience overrides.
+# Copy to docker-compose.override.yml (loaded automatically) and adjust.
+services:
+  jellyfin:
+    ports:
+      - "8096:8096"
+    # Intel/AMD hardware transcoding:
+    # devices:
+    #   - /dev/dri:/dev/dri

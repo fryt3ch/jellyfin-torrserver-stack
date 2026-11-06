@@ -1,0 +1,11 @@
+# Local configuration and runtime data
+.env
+data/
+docker-compose.override.yml
+
+# Editor / OS noise
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

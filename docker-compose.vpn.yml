@@ -1,0 +1,48 @@
+# Optional VPN overlay. Requires Docker Compose v2.24+ (uses the !reset tag).
+#
+#   docker compose --profile vpn \
+#     -f docker-compose.yml -f docker-compose.vpn.yml up -d
+#
+# TorrServer is moved into the Gluetun network namespace so all of its
+# traffic is routed through the VPN. Jellyfin still reaches it as
+# http://torrserver:8090 through the shared nginx-net alias.
+services:
+  torrserver:
+    network_mode: "service:gluetun"
+    networks: !reset []
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+    profiles:
+      - vpn
+
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    profiles:
+      - vpn
+    volumes:
+      - ${GLUETUN_DATA:-./data/gluetun}:/gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    networks:
+      nginx-net:
+        aliases:
+          - torrserver
+    ports:
+      - "${TORRSERVER_BIND_IP:-0.0.0.0}:8090:8090"
+    environment:
+      - TZ=${TZ:-UTC}
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER:-custom}
+      - VPN_TYPE=${VPN_TYPE:-wireguard}
+      - WIREGUARD_MTU=${WIREGUARD_MTU:-1280}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+      - WIREGUARD_ENDPOINT_IP=${WIREGUARD_ENDPOINT_IP}
+      - WIREGUARD_ENDPOINT_PORT=${WIREGUARD_ENDPOINT_PORT:-51820}
+      - FIREWALL_INPUT_PORTS=8090
+    restart: unless-stopped
