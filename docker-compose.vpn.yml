@@ -29,7 +29,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     networks:
-      nginx-net:
+      jellyfin:
         aliases:
           - torrserver
     ports:

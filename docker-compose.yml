@@ -3,13 +3,11 @@ services:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     user: "${PUID:-1000}:${PGID:-1000}"
-    environment:
-      - TZ=${TZ:-UTC}
     volumes:
       - ${JELLYFIN_CONFIG:-./data/jellyfin/config}:/config
       - ${DOWNLOADS_PATH:-./data/downloads}:/mnt/downloads
     networks:
-      - nginx-net
+      - jellyfin-net
     # Expose Jellyfin directly if you are not using a reverse proxy.
     #ports:
     #  - 8096:8096
@@ -21,7 +19,6 @@ services:
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
-      - TZ=${TZ:-UTC}
     volumes:
       - ${TORRSERVER_DATA:-./data/torrserver}:/opt/torrserver
     deploy:
@@ -31,7 +28,7 @@ services:
         reservations:
           memory: 512M
     networks:
-      nginx-net:
+      jellyfin-net:
         aliases:
           - torrserver
     # Expose TorrServer directly if Jellyfin and clients need LAN access
@@ -41,5 +38,5 @@ services:
     restart: unless-stopped
 
 networks:
-  nginx-net:
+  jellyfin-net:
     external: true

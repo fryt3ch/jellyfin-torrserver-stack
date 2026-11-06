@@ -23,7 +23,7 @@
 
 ```bash
 # 1. Create the shared network used by Jellyfin and TorrServer
-docker network create nginx-net
+docker network create jellyfin-net
 
 # 2. Configure
 cp .env.example .env
@@ -33,7 +33,7 @@ cp .env.example .env
 docker compose up -d
 ```
 
-Jellyfin is reachable from other containers on `nginx-net` as `http://jellyfin:8096`.
+Jellyfin is reachable from other containers on `jellyfin-net` as `http://jellyfin:8096`.
 TorrServer is reachable as `http://torrserver:8090`.
 
 If you are **not** behind a reverse proxy and want direct access, uncomment the
