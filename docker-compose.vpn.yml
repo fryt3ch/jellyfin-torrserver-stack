@@ -5,7 +5,7 @@
 #
 # TorrServer is moved into the Gluetun network namespace so all of its
 # traffic is routed through the VPN. Jellyfin still reaches it as
-# http://torrserver:8090 through the shared nginx-net alias.
+# http://torrserver:8090 through the shared jellyfin-net alias.
 services:
   torrserver:
     network_mode: "service:gluetun"
@@ -29,7 +29,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     networks:
-      jellyfin:
+      jellyfin-net:
         aliases:
           - torrserver
     ports:
@@ -44,5 +44,6 @@ services:
       - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
       - WIREGUARD_ENDPOINT_IP=${WIREGUARD_ENDPOINT_IP}
       - WIREGUARD_ENDPOINT_PORT=${WIREGUARD_ENDPOINT_PORT:-51820}
+      - WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL=${WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL:-25s}
       - FIREWALL_INPUT_PORTS=8090
     restart: unless-stopped
